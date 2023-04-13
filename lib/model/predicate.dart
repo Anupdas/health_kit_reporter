@@ -12,16 +12,19 @@ import 'package:health_kit_reporter/health_kit_reporter.dart';
 class Predicate {
   const Predicate(
     this.startDate,
-    this.endDate,
-  );
+    this.endDate, {
+    this.userInput = true,
+  });
 
   final DateTime startDate;
   final DateTime endDate;
+  final bool userInput;
 
   /// General map representation
   ///
   Map<String, int> get map => {
         'startTimestamp': startDate.millisecondsSinceEpoch,
         'endTimestamp': endDate.millisecondsSinceEpoch,
+        'userInput': userInput ? 1 : 0,
       };
 }

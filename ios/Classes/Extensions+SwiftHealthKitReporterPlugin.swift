@@ -685,7 +685,8 @@ extension SwiftHealthKitReporterPlugin {
             let identifier = arguments["identifier"] as? String,
             let unit = arguments["unit"] as? String,
             let startTimestamp = arguments["startTimestamp"] as? Double,
-            let endTimestamp = arguments["endTimestamp"] as? Double
+            let endTimestamp = arguments["endTimestamp"] as? Double,
+            let userInput = arguments["userInput"] as? Bool
         else {
             throwParsingArgumentsError(result: result, arguments: arguments)
             return
@@ -700,10 +701,15 @@ extension SwiftHealthKitReporterPlugin {
             )
             return
         }
-        let predicate = NSPredicate.samplesPredicate(
+       let datePredicate = NSPredicate.samplesPredicate(
             startDate: Date.make(from: startTimestamp),
             endDate: Date.make(from: endTimestamp)
         )
+       
+        let predicate = userInput ? datePredicate :
+            NSCompoundPredicate( type: .and, 
+                subpredicates: [datePredicate, 
+                    NSPredicate(format: "metadata.%K != YES", "HKWasUserEntered")])
         do {
             let query = try reporter.reader.statisticsQuery(
                 type: type,
